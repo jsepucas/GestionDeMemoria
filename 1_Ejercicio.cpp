@@ -68,4 +68,5 @@ int main() {
 unsigned int __stdcall ChildThread(void* pBuf) {
     _tprintf(_T("Child reads: %s\n"), (TCHAR*)pBuf);
     return 0;
+
 }
