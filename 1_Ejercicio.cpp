@@ -21,3 +21,31 @@ int main() {
             SIZE,                   // tamaño máximo del objeto (DWORD de orden inferior)
             _T("Local\\MyFileMappingObject")); // nombre del objeto de mapeo de archivos
 
+    if (hMapFile == nullptr) {
+        _tprintf(_T("No se  ha podido crear el objeto de mapeo de archivos (%lu).\n"),    GetLastError());
+        return 1;
+    }
+
+    pBuf = (LPTSTR)MapViewOfFile(hMapFile,   // manejador del objeto de mapeo
+                                 FILE_MAP_ALL_ACCESS, // permiso de lectura/escritura
+                                 0,
+                                 0,
+                                 SIZE);
+
+    if (pBuf == nullptr) {
+        _tprintf(_T("No se ha podido mapear la vista del archivo (%lu).\n"), GetLastError());
+
+        CloseHandle(hMapFile);
+        return 1;
+    }
+
+
+    auto hThread = (HANDLE)_beginthreadex(nullptr, 0, ChildThread, (void*)pBuf, 0, nullptr);
+    if (hThread == nullptr) {
+        _tprintf(_T("No se ha podido crear  hilo secundario.\n"));
+
+        UnmapViewOfFile(pBuf);
+        CloseHandle(hMapFile);
+        return 1;
+    }
+
