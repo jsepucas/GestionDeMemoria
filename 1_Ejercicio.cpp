@@ -49,3 +49,23 @@ int main() {
         return 1;
     }
 
+
+    _tcscpy_s((TCHAR*)pBuf, SIZE, _T("Hello, child process!"));
+
+
+    WaitForSingleObject(hThread, INFINITE);
+
+
+    CloseHandle(hThread);
+
+    UnmapViewOfFile(pBuf);
+    CloseHandle(hMapFile);
+
+    return 0;
+}
+
+
+unsigned int __stdcall ChildThread(void* pBuf) {
+    _tprintf(_T("Child reads: %s\n"), (TCHAR*)pBuf);
+    return 0;
+}
